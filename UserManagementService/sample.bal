@@ -6,18 +6,14 @@ public type Task record {
     string taskName;
     int workerId;
     string taskDescription;
-    Subtask[] subtasks;
-};
-
-public type Subtask record {
-    string subtaskName;
-    int estimatedDays;
+    boolean isCompleted;
+    string[] subtasks;
 };
 
 table<Task> key(taskId) taskTable = table [
-    {taskId: 1, taskName: "Task 1", workerId: 101, taskDescription: "Description for Task 1", subtasks: [{subtaskName: "sub11", estimatedDays: 11}]},
-    {taskId: 2, taskName: "Task 2", workerId: 102, taskDescription: "Description for Task 2", subtasks: [{subtaskName: "sub1", estimatedDays: 1}]},
-    {taskId: 3, taskName: "Task 3", workerId: 105, taskDescription: "Description for Task 3", subtasks: [{subtaskName: "sub32", estimatedDays: 3}]}
+    {taskId: 1, taskName: "Task 1", workerId: 101, taskDescription: "Description for Task 1", isCompleted: false, subtasks: ["st1"]},
+    {taskId: 2, taskName: "Task 2", workerId: 102, taskDescription: "Description for Task 2", isCompleted: true, subtasks: ["st1, st2"]},
+    {taskId: 3, taskName: "Task 3", workerId: 105, taskDescription: "Description for Task 3", isCompleted: false, subtasks: ["st3"]}
 ];
 
 public distinct service class TaskService {
@@ -43,24 +39,12 @@ public distinct service class TaskService {
         return self.taskRecord.taskDescription;
     }
 
-    resource function get subtasks() returns SubTaskService[] {
-        return self.taskRecord.subtasks.map(subtask => new SubTaskService(subtask));
-    }
-}
-
-public distinct service class SubTaskService {
-    private final readonly & Subtask subtaskRecord;
-
-    function init(Subtask subtaskRecord) {
-        self.subtaskRecord = subtaskRecord.cloneReadOnly();
+    resource function get isCompleted() returns boolean {
+        return self.taskRecord.isCompleted;
     }
 
-    resource function get subtaskName() returns string {
-        return self.subtaskRecord.subtaskName;
-    }
-
-    resource function get estimatedDays() returns int {
-        return self.subtaskRecord.estimatedDays;
+    resource function get subtasks() returns string[] {
+        return self.taskRecord.subtasks;
     }
 }
 
@@ -82,7 +66,9 @@ service /tasks on new graphql:Listener(9000) {
     }
 
     remote function addTask(Task task) returns TaskService {
+        log:printInfo("Adding task: " + task.toString());
         taskTable.add(task);
+        log:printInfo("Task added: " + task.toString());
         return new TaskService(task);
     }
 }
