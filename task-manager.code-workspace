@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "./task-service"
+		},
+		{
+			"name": "UserManagementService",
+			"path": "UserManagementService"
+		}
+	],
+	"settings": {
+		"ballerina.enableRunFast": true,
+		"ballerina.experimental": true,
+		"ballerina.home": "/Library/Ballerina/distributions/ballerina-2201.8.0"
+	}
+}

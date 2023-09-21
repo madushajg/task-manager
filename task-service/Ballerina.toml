@@ -1,0 +1,8 @@
+[package]
+org = "madusha"
+name = "task_service"
+version = "0.1.0"
+distribution = "2201.8.0-20230908-135700-74a59dff"
+
+[build-options]
+observabilityIncluded = true
